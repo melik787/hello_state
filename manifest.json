@@ -1,0 +1,6 @@
+{
+    "domain": "hello_state",
+    "name": "Hello, state!",
+    "config_flow": true,
+    "version": "0.1.0"
+  }
