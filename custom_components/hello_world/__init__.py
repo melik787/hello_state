@@ -15,14 +15,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up hello_state from a config entry."""
-    _LOGGER.info("Sensor entry setup")
-    hass.async_create_task(
-    hass.config_entries.async_forward_entry_setup(entry, "switch")
-    )
-    hass.async_create_task(
-    hass.config_entries.async_forward_entry_setup(entry, "sensor")
-    )
-    _LOGGER.info("Switch entry setup")
+    _LOGGER.info("Sensor and Switch entry setup")
+    await hass.config_entries.async_forward_entry_setups(entry, ["sensor", "switch"])
     return True
 
 
