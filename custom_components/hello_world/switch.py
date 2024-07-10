@@ -23,11 +23,11 @@ class MySwitch(SwitchEntity):
     def name(self):
         return self._name
     
-    async def async_turn_on(self, **kwargs):
+    async def async_turn_on(self):
         self._is_on = True
         self.async_write_ha_state()
 
     
-    async def async_turn_off(self, **kwargs):
+    async def async_turn_off(self):
         self._is_on = False
         self.async_write_ha_state()
