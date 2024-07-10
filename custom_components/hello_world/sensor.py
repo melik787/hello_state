@@ -1,11 +1,7 @@
-from homeassistant.helpers.entity import Entity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CONF_HOST
-import random
-
-from .const import DOMAIN
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up the Hello, state! sensor."""
@@ -34,5 +30,3 @@ class HelloStateSensor(SensorEntity):
     def unique_id(self):
         """Return a unique ID."""
         return f"hello_state_{self._host}"
-
-
