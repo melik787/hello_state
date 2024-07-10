@@ -1,14 +1,7 @@
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST
-
-from .const import DOMAIN
-
-import logging
-
-_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up the Hello, state! sensor."""
@@ -19,7 +12,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class MySwitch(SwitchEntity):
     def __init__(self, host):
         """Initialize the switch"""
-        self._name = f"Switch ww1Boost {host}"
+        self._name = f"Switch hello {host}"
         self._is_on = False
     
     @property
@@ -38,4 +31,3 @@ class MySwitch(SwitchEntity):
     async def async_turn_off(self, **kwargs):
         self._is_on = False
         self.async_write_ha_state()
-
