@@ -1,0 +1,12 @@
+{
+    "config": {
+      "step": {
+        "user": {
+          "menu_options": {
+            "ip-known": "IP bekannt",
+            "ip-unknown": "IP unbekannt ({model})"
+          }
+        }
+      }
+    }
+  }

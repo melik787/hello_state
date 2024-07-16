@@ -22,10 +22,10 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_menu(
             step_id="user",
-            menu_options=[
-                {"button": "button_1", "description": "IP bekannt"},
-                {"button": "button_2", "description": "IP unbekannt"},
-            ],
+            menu_options=["ip-known", "ip-unknown"],
+            description_placeholders={
+                "model": "Example model"
+            }
         )
     
     async def async_step_host(self, user_input=None):
