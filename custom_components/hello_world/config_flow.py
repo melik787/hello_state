@@ -14,14 +14,19 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
 
-        if user_input is None:
-            return self.async_show_menu(
+        if user_input is not None:
+            if user_input["menu_option"] == "ip-known":
+                return await self.async_step_ip_known()
+            elif user_input["menu_option"] == "ip-unknown":
+                return await self.async_step_ip_unknown()
+            
+        return self.async_show_menu(
             step_id="user",
             menu_options=["ip-known", "ip-unknown"],
             description_placeholders={
                 "model": "Example model"
             }
-        )
+        )   
 
     async def async_step_host(self, user_input=None):
         if user_input is not None:
