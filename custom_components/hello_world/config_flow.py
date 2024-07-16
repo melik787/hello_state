@@ -14,20 +14,15 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
 
-        if user_input is not None:
-            if user_input["button"] == "button_1":
-                return await self.async_step_host()
-            elif user_input["button"] == "button_2":
-                return await self.async_step_host()
-
-        return self.async_show_menu(
+        if user_input is None:
+            return self.async_show_menu(
             step_id="user",
             menu_options=["ip-known", "ip-unknown"],
             description_placeholders={
                 "model": "Example model"
             }
         )
-    
+
     async def async_step_host(self, user_input=None):
         if user_input is not None:
             host = user_input[CONF_HOST]
@@ -37,3 +32,9 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="host",
             data_schema=vol.Schema({vol.Required(CONF_HOST): str}),
         )
+    
+    async def async_step_ip_known(self, user_input=None):
+        return await self.async_step_host(user_input)
+    
+    async def async_step_ip_unknown(self, user_input=None):
+        return await self.async_step_host(user_input)
