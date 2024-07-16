@@ -15,9 +15,9 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
 
         if user_input is not None:
-            if user_input["button"] is "button_1":
+            if user_input["button"] == "button_1":
                 return await self.async_step_host()
-            elif user_input["button"] is "button_2":
+            elif user_input["button"] == "button_2":
                 return await self.async_step_host()
 
         return self.async_show_menu(
