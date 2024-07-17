@@ -15,7 +15,10 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
         return self.async_show_menu(
             step_id="user",
-            menu_options=["ip_known", "ip_unknown"],
+            menu_options={
+                "ip_known": "IP Adresse bekannt",
+                "ip_unknown": "IP Adresse unbekannt"
+            },
         )   
     
     async def async_step_ip_known(self, user_input=None):
