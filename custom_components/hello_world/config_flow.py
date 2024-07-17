@@ -21,7 +21,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_ip_known(self, user_input=None):
         if user_input is not None:
             host = user_input[CONF_HOST]
-            return await self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
+            return self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
         
         return self.async_show_form(
             step_id="ip_known",
