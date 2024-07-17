@@ -114,7 +114,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     
     async def check_device(self, session, ip):
         try:
-            timeout = ClientTimeout(total=10)
+            timeout = ClientTimeout(total=15)
             async with session.get(f"http://{ip}/mypv_dev.jsn", timeout=timeout) as response:
                 if response.status == 200:
                     data = await response.json()
