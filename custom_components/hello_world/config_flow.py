@@ -4,6 +4,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_HOST
 import ipaddress
 import logging
+import aiohttp
 
 from .const import DOMAIN
 
@@ -28,11 +29,13 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_ip_known(self, user_input=None):
         if user_input is not None:
             host = user_input[CONF_HOST]
-            return self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
+            if self.is_valid_ip(host):
+
+                return self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
         
         return self.async_show_form(
             step_id="ip_known",
-            data_schema=vol.Schema({vol.Required(CONF_HOST): str}),
+            data_schema=vol.Schema({vol.Required(CONF_HOST, default="192.168.0.0"): str}),
         )
     
     async def async_step_ip_unknown(self, user_input=None):
@@ -46,16 +49,26 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             
         return self.async_show_form(
             step_id="ip_unknown",
-            data_schema=vol.Schema({vol.Required("subnet", default="192.168.0.0"): str}),
+            data_schema=vol.Schema({vol.Required("subnet", default="192.168.0"): str}),
             errors=errors
         )  
     
-    def is_valid_subnet(self, subnet):
+    def is_valid_ip(self, ip):
         try:
-            ipaddress.ip_network(subnet)
+            ipaddress.ip_network(ip)
             return True
         except ValueError:
             _LOGGER.error("You entered an invalid subnet")
             return False
     
-    # def scan_devices(self, subnet):
+    def is_valid_subnet(self, subnet):
+        cntPeriod = subnet.count('.')
+        if cntPeriod != 2:
+            _LOGGER.error("Invalid subnet")
+            return False
+        ip = subnet + ".0"
+        return self.is_valid_ip(ip)
+        
+    async def scan_devices(self, subnet):
+        async with aiohttp.ClientSession() as session:
+            async with session.get() as response:
