@@ -2,6 +2,7 @@
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST
+from aiohttp import ClientTimeout
 import ipaddress
 import logging
 import aiohttp
@@ -113,9 +114,13 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     
     async def check_device(self, session, ip):
         try:
-            _LOGGER.debug(f"{ip} wird gecheckt bei scan_devices")
-            async with session.get(f"http://{ip}/mypv_dev.jsn", timeout=5) as response:
+            _LOGGER.warning(f"{ip} wird gecheckt bei scan_devices")
+            timeout = ClientTimeout(total=5)
+            async with session.get(f"http://{ip}/mypv_dev.jsn", timeout=timeout) as response:
                 return response.status == 200
-        except (aiohttp.ClientError) as e:
+        except aiohttp.ClientError as e:
             _LOGGER.warning(f"No connection to {ip}: {e}")
+            return False
+        except asyncio.TimeoutError as e:
+            _LOGGER.warning(f"Timeout at {ip}: {e}")
             return False
