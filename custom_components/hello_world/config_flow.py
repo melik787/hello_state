@@ -69,6 +69,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         ip = subnet + ".0"
         return self.is_valid_ip(ip)
         
+        """
     async def scan_devices(self, subnet):
         async with aiohttp.ClientSession() as session:
-            async with session.get() as response:
+            async with session.get() as response:"""
