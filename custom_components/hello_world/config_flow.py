@@ -5,6 +5,7 @@ from homeassistant.const import CONF_HOST
 import ipaddress
 import logging
 import aiohttp
+import asyncio
 
 from .const import DOMAIN
 
@@ -16,13 +17,17 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     MINOR_VERSION = 1
 
+    def __init__(self) -> None:
+        self._devices = {}
+        self._host = None
+
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         return self.async_show_menu(
             step_id="user",
             menu_options={
-                "ip_known": "IP Adresse bekannt",
-                "ip_unknown": "IP Adresse unbekannt"
+                "ip_known": "IP address",
+                "ip_unknown": "IP subnet scan"
             },
         )   
     
@@ -30,8 +35,8 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             host = user_input[CONF_HOST]
             if self.is_valid_ip(host):
-
-                return self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
+                if self.check_ip_device(host):
+                    return self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
         
         return self.async_show_form(
             step_id="ip_known",
@@ -43,7 +48,11 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             subnet = user_input["subnet"]
             if self.is_valid_subnet(subnet):
-                return self.async_create_entry(title="Hello world! IP unknown", data={CONF_HOST: subnet})
+                self._devices = self.scan_devices(subnet)
+                if self._devices:    
+                    return self.async_step_select_device()
+                else:
+                    errors["base"] = "no devices found"
             else:
                 errors["base"] = "invalid_subnet"
             
@@ -53,6 +62,19 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors
         )  
     
+    async def async_step_select_device(self, user_input=None):
+        if user_input is not None:
+            selected_ip = user_input["device"]
+            return self.async_create_entry(title="Hello world! IP unknown", data={CONF_HOST: selected_ip})
+        
+        return self.async_show_form(
+            step_id="select_device",
+            data_schema=vol.Schema({
+                vol.Required("device"): vol.In(list(self._devices.keys()))
+            }),
+            description_placeholders={"devices": ", ".join(self._devices.keys())}
+        )  
+        
     def is_valid_ip(self, ip):
         try:
             ipaddress.ip_network(ip)
@@ -69,7 +91,32 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         ip = subnet + ".0"
         return self.is_valid_ip(ip)
         
-        """
-    async def scan_devices(self, subnet):
+    async def check_ip_device(self, ip):
         async with aiohttp.ClientSession() as session:
-            async with session.get() as response:"""
+            return self.check_device(session, ip)
+    
+    async def scan_devices(self, subnet):
+        devices = {}
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for i in range(1, 255):
+                ip = f"{subnet}.{i}"
+                _LOGGER.error(f"{ip} wird gecheckt bei scan_devices")
+                tasks.append(self.check_device(session, ip))
+
+            results = await asyncio.gather(*tasks)
+
+            for ip, is_device in zip([f"{subnet}.{i}" for i in range(1, 255)], results):
+                if is_device:
+                    devices[ip] = f"my-PV Device {ip}"
+
+        return devices
+    
+    async def check_device(self, session, ip):
+        try:
+            async with session.get(f"http://{ip}/mypv_dev.jsn", timeout=2) as response:
+                if response.status == 200:
+                    return True
+        except (aiohttp.ClientError):
+            pass
+        return False
