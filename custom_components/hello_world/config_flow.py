@@ -106,9 +106,9 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
             results = await asyncio.gather(*tasks)
 
-            for ip, is_device in zip([f"{subnet}.{i}" for i in range(1, 255)], results):
-                if is_device:
-                    devices[ip] = f"my-PV Device {ip}"
+            for ip, device_name in zip([f"{subnet}.{i}" for i in range(1, 255)], results):
+                if device_name is not None:
+                    devices[ip] = f"{device_name} {ip}"
 
         return devices
     
@@ -116,8 +116,10 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         try:
             timeout = ClientTimeout(total=10)
             async with session.get(f"http://{ip}/mypv_dev.jsn", timeout=timeout) as response:
-                return response.status == 200
+                if response.status == 200:
+                    data = await response.json()
+                    return data.get("device")
         except aiohttp.ClientError as e:
-            return False
+            return None
         except asyncio.TimeoutError as e:
-            return False
+            return None
