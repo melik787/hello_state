@@ -35,7 +35,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             host = user_input[CONF_HOST]
             if self.is_valid_ip(host):
-                if self.check_ip_device(host):
+                if await self.check_ip_device(host):
                     return self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
         
         return self.async_show_form(
@@ -48,9 +48,9 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             subnet = user_input["subnet"]
             if self.is_valid_subnet(subnet):
-                self._devices = self.scan_devices(subnet)
+                self._devices = await self.scan_devices(subnet)
                 if self._devices:    
-                    return self.async_step_select_device()
+                    return await self.async_step_select_device()
                 else:
                     errors["base"] = "no devices found"
             else:
@@ -77,10 +77,10 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         
     def is_valid_ip(self, ip):
         try:
-            ipaddress.ip_network(ip)
+            ipaddress.ip_address(ip)
             return True
         except ValueError:
-            _LOGGER.error("You entered an invalid subnet")
+            _LOGGER.error("You entered an invalid IP")
             return False
     
     def is_valid_subnet(self, subnet):
@@ -93,7 +93,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         
     async def check_ip_device(self, ip):
         async with aiohttp.ClientSession() as session:
-            return self.check_device(session, ip)
+            return await self.check_device(session, ip)
     
     async def scan_devices(self, subnet):
         devices = {}
