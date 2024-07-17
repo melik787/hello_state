@@ -45,6 +45,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="ip_unknown",
             data_schema=vol.Schema({vol.Required("subnet"): str}),
             errors=errors
+            defaults={"subnet": "192.168.0.0"}
         )  
     
     def is_valid_subnet(self, subnet):
