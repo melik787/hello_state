@@ -71,9 +71,9 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="select_device",
             data_schema=vol.Schema({
-                vol.Required("device"): vol.In(list(self._devices.keys()))
+                vol.Required("device"): vol.In(list(self._devices.values()))
             }),
-            description_placeholders={"devices": ", ".join(self._devices.keys())}
+            description_placeholders={"devices": ", ".join(self._devices.values())}
         )  
         
     def is_valid_ip(self, ip):
