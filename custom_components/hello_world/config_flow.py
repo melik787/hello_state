@@ -3,8 +3,11 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST
 import ipaddress
+import logging
 
 from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Hello, state!"""
@@ -43,9 +46,8 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             
         return self.async_show_form(
             step_id="ip_unknown",
-            data_schema=vol.Schema({vol.Required("subnet"): str}),
-            errors=errors,
-            defaults={"subnet": "192.168.0.0"}
+            data_schema=vol.Schema({vol.Required("subnet", default="192.168.0.0"): str}),
+            errors=errors
         )  
     
     def is_valid_subnet(self, subnet):
@@ -53,6 +55,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             ipaddress.ip_network(subnet)
             return True
         except ValueError:
+            _LOGGER.error("You entered an invalid subnet")
             return False
     
     # def scan_devices(self, subnet):
