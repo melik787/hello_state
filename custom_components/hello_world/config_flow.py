@@ -101,7 +101,6 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             tasks = []
             for i in range(1, 255):
                 ip = f"{subnet}.{i}"
-                _LOGGER.error(f"{ip} wird gecheckt bei scan_devices")
                 tasks.append(self.check_device(session, ip))
 
             results = await asyncio.gather(*tasks)
@@ -114,6 +113,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     
     async def check_device(self, session, ip):
         try:
+            _LOGGER.error(f"{ip} wird gecheckt bei scan_devices")
             async with session.get(f"http://{ip}/mypv_dev.jsn", timeout=2) as response:
                 return response.status == 200
         except (aiohttp.ClientError) as e:
