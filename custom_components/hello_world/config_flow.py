@@ -114,13 +114,10 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     
     async def check_device(self, session, ip):
         try:
-            _LOGGER.warning(f"{ip} wird gecheckt bei scan_devices")
-            timeout = ClientTimeout(total=5)
+            timeout = ClientTimeout(total=8)
             async with session.get(f"http://{ip}/mypv_dev.jsn", timeout=timeout) as response:
                 return response.status == 200
         except aiohttp.ClientError as e:
-            _LOGGER.warning(f"No connection to {ip}: {e}")
             return False
         except asyncio.TimeoutError as e:
-            _LOGGER.warning(f"Timeout at {ip}: {e}")
             return False
