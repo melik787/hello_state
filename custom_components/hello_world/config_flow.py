@@ -117,6 +117,8 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             async with session.get(f"http://{ip}/mypv_dev.jsn", timeout=2) as response:
                 if response.status == 200:
                     return True
-        except (aiohttp.ClientError):
-            pass
+                else:
+                    _LOGGER.error(f"Received status {response.status} from {ip}")
+        except (aiohttp.ClientError) as e:
+            _LOGGER.error(f"No connection to {ip}: {e}")
         return False
