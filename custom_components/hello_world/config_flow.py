@@ -44,7 +44,7 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="ip_unknown",
             data_schema=vol.Schema({vol.Required("subnet"): str}),
-            errors=errors
+            errors=errors,
             defaults={"subnet": "192.168.0.0"}
         )  
     
