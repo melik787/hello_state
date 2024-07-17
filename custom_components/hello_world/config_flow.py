@@ -2,6 +2,7 @@
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST
+import ipaddress
 
 from .const import DOMAIN
 
@@ -33,10 +34,20 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     
     async def async_step_ip_unknown(self, user_input=None):
         if user_input is not None:
-            host = user_input[CONF_HOST]
-            return self.async_create_entry(title="Hello world! IP unknown", data={CONF_HOST: host})
-
+            subnet = user_input["subnet"]
+            return self.async_create_entry(title="Hello world! IP unknown", data={CONF_HOST: subnet})
+            
         return self.async_show_form(
             step_id="ip_unknown",
-            data_schema=vol.Schema({vol.Required(CONF_HOST): str}),
-        )
+            data_schema=vol.Schema({vol.Required("subnet"): str}),
+            errors={"base": "invalid_subnet"} if user_input and not self.is_valid_subnet(user_input["subnet"]) else None,
+        )  
+    
+    def is_valid_subnet(self, subnet):
+        try:
+            ipaddress.ip_network(subnet)
+            return True
+        except ValueError:
+            return False
+    
+    # def scan_devices(self, subnet):
