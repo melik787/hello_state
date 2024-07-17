@@ -33,14 +33,18 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
     
     async def async_step_ip_unknown(self, user_input=None):
+        errors = {}
         if user_input is not None:
             subnet = user_input["subnet"]
-            return self.async_create_entry(title="Hello world! IP unknown", data={CONF_HOST: subnet})
+            if self.is_valid_subnet(subnet):
+                return self.async_create_entry(title="Hello world! IP unknown", data={CONF_HOST: subnet})
+            else:
+                errors["base"] = "invalid_subnet"
             
         return self.async_show_form(
             step_id="ip_unknown",
             data_schema=vol.Schema({vol.Required("subnet"): str}),
-            errors={"base": "invalid_subnet"} if user_input and not self.is_valid_subnet(user_input["subnet"]) else None,
+            errors=errors
         )  
     
     def is_valid_subnet(self, subnet):
