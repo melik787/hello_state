@@ -45,10 +45,10 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     return self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
                 
         data_schema = vol.Schema({
-            vol.Required("octet1"): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
-            vol.Required("octet2"): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
-            vol.Required("octet3"): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
-            vol.Required("octet4"): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
+            vol.Required("octet1"): str,
+            vol.Required("octet2"): str,
+            vol.Required("octet3"): str,
+            vol.Required("octet4"): str,
         })
 
         return self.async_show_form(
