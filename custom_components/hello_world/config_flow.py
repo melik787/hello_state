@@ -34,15 +34,31 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     
     async def async_step_ip_known(self, user_input=None):
         if user_input is not None:
-            host = user_input[CONF_HOST]
+            octet1 = user_input.get("octet1")
+            octet2 = user_input.get("octet2")
+            octet3 = user_input.get("octet3")
+            octet4 = user_input.get("octet4")
+
+            host = f"{octet1}.{octet2}.{octet3}.{octet4}"
             if self.is_valid_ip(host):
                 if await self.check_ip_device(host):
                     return self.async_create_entry(title="Hello world! IP known", data={CONF_HOST: host})
-        
+                
+        data_schema = vol.Schema({
+            vol.Required("octet1"): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
+            vol.Required("octet2"): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
+            vol.Required("octet3"): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
+            vol.Required("octet4"): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
+        })
+
+        return self.async_show_form(
+            step_id="ip_known", data_schema=data_schema
+        )
+        """
         return self.async_show_form(
             step_id="ip_known",
             data_schema=vol.Schema({vol.Required(CONF_HOST, default="192.168.0.0"): str}),
-        )
+        )"""
     
     async def async_step_ip_unknown(self, user_input=None):
         errors = {}
@@ -119,6 +135,8 @@ class HelloStateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 if response.status == 200:
                     data = await response.json()
                     return data.get("device")
+                else:
+                    return None
         except aiohttp.ClientError as e:
             return None
         except asyncio.TimeoutError as e:
