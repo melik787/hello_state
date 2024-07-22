@@ -10,6 +10,7 @@ DEFAULT_NAME = 'ww1Boost'
 DEFAULT_MIN_VALUE = 30
 DEFAULT_MAX_VALUE = 70
 DEFAULT_STEP = 0.1
+DEFAULT_MODE = "slider"
 
 async def async_setup_entry(hass: HomeAssistant, entry, async_add_entities):
     """Set up the custom number entity."""
@@ -27,6 +28,7 @@ class CustomNumberEntity(NumberEntity):
         self._value = 50  # Default value within range
         self._step = DEFAULT_STEP
         self._unit_of_measurement = UnitOfTemperature.CELSIUS
+        self._mode = DEFAULT_MODE
 
     @property
     def unique_id(self):
@@ -62,6 +64,10 @@ class CustomNumberEntity(NumberEntity):
     def native_unit_of_measurement(self):
         """Return the unit of measurement for this number."""
         return self._unit_of_measurement
+    
+    @property
+    def mode(self):
+        return self._mode
 
     async def async_set_value(self, value: float):
         """Set a new value for this number."""
