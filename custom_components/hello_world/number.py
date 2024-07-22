@@ -1,5 +1,8 @@
 from homeassistant.components.number import NumberEntity
 from homeassistant.core import HomeAssistant
+
+from homeassistant.const import UnitOfTemperature
+
 import logging
 
 _LOGGER = logging.getLogger(__name__)
@@ -22,7 +25,9 @@ class CustomNumberEntity(NumberEntity):
         self._name = name
         self._min_value = DEFAULT_MIN_VALUE
         self._max_value = DEFAULT_MAX_VALUE
-        self._value = self._min_value  # Default value to min_value
+        self._value = 50
+        self._step = 0.1
+        self._unit_of_measurement = UnitOfTemperature.CELSIUS
 
     @property
     def unique_id(self):
@@ -48,6 +53,14 @@ class CustomNumberEntity(NumberEntity):
     def value(self):
         """Return the current value of this number."""
         return self._value
+    
+    @property
+    def step(self):
+        return self._step
+    
+    @property
+    def unit_of_measurement(self):
+        return self._unit_of_measurement
 
     async def async_set_value(self, value: float):
         """Set a new value for this number."""
