@@ -1,16 +1,15 @@
 from homeassistant.components.number import NumberEntity
 from homeassistant.core import HomeAssistant
-
 from homeassistant.const import UnitOfTemperature
-
 import logging
 
 _LOGGER = logging.getLogger(__name__)
 
 # Default-Werte
-DEFAULT_NAME = 'Custom Number'
+DEFAULT_NAME = 'ww1Boost'
 DEFAULT_MIN_VALUE = 30
 DEFAULT_MAX_VALUE = 70
+DEFAULT_STEP = 0.1
 
 async def async_setup_entry(hass: HomeAssistant, entry, async_add_entities):
     """Set up the custom number entity."""
@@ -25,8 +24,8 @@ class CustomNumberEntity(NumberEntity):
         self._name = name
         self._min_value = DEFAULT_MIN_VALUE
         self._max_value = DEFAULT_MAX_VALUE
-        self._value = 50
-        self._step = 0.1
+        self._value = 50  # Default value within range
+        self._step = DEFAULT_STEP
         self._unit_of_measurement = UnitOfTemperature.CELSIUS
 
     @property
@@ -56,10 +55,12 @@ class CustomNumberEntity(NumberEntity):
     
     @property
     def step(self):
+        """Return the step size for this number."""
         return self._step
     
     @property
     def unit_of_measurement(self):
+        """Return the unit of measurement for this number."""
         return self._unit_of_measurement
 
     async def async_set_value(self, value: float):
