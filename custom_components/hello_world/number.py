@@ -39,27 +39,27 @@ class CustomNumberEntity(NumberEntity):
         return self._name
 
     @property
-    def min_value(self):
+    def native_min_value(self):
         """Return the minimum value of this number."""
         return self._min_value
 
     @property
-    def max_value(self):
+    def native_max_value(self):
         """Return the maximum value of this number."""
         return self._max_value
 
     @property
-    def value(self):
+    def native_value(self):
         """Return the current value of this number."""
         return self._value
     
     @property
-    def step(self):
+    def native_step(self):
         """Return the step size for this number."""
         return self._step
     
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit of measurement for this number."""
         return self._unit_of_measurement
 
